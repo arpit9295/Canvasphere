@@ -2,110 +2,130 @@
 <html>
 <head>
 <title>
-  Brick
+  Biker
 </title>
 <meta charset="utf-8">
-<script src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <script>
-$(document).ready(function(){
-	var canvas=document.getElementById('mycanvas');
-	var ctx=canvas.getContext('2d');
-	var cw=canvas.width;
-	var ch=canvas.height;
-	var py=350;
-	var ph=20;
-	var og=150;//obstacle gap
-	var oh=20;//obstacle height
-	var od=130;
-	var vx, vy, ay=+0.7;
-	var ocolor="#AAF";
-	var pcolor="#333";
-	var obstacle;
-	var player;
-	var score=0;
-	function init()
-	{
-		obstacle=[];
-		create_obstacle();
-		vy=-10;
-		vx=3;
-		player={
-			y:py,
-			x:Math.floor(cw/2)
-		};
-		score=0;
-	}
-	init();
-	var k=setInterval(draw, 20);
-	function create_obstacle(){
-		 var temp = Math.floor(Math.random()*(cw-og));
-		 obstacle.unshift({
-			x1 : 0,
-			w1 : temp,
-			x2 : temp+150,
-			w2 : cw-temp-150,
-			y : -20,
-			passed:0
-		 });
-	}
+$(document).ready(
+  function()
+  {
+    var canvas=document.getElementById('mycanvas');
+    var cont=canvas.getContext('2d');
+    var cw=canvas.width;
+    var ch=canvas.height;
+    var gap=150;
+    var obstacle;
+    var time=0;
+    var ph=25;
+    var vx=5,vy=-10;
+    var score=0;
+    var image;
+    var data;
+    var player=
+    {
+      x1:cw/2,
+      y1:(3*ch)/4
+    };
+    function init()
+    {
+      obstacle=[];
+      score=0;
+      player.x1=cw/2;
+      player.y1=(3*ch)/4;
+      vx=5;
+      vy=-10;
+      time=0;
+      create_obstacle();
 
-	$(document).keydown(function (e){
-		var key = event.which;
-		if(key==37){
-			vx=-3;
-			vy=-10;
-		}
-		if(key==39){
-			vx=+3;
-			vy=-10;
-		};
-	})
-	
-	function draw(){
-		if(collision()){
-			init();
-		}
-		//score=score+0.04;
-		player.x=player.x+vx;
-		player.y=player.y+vy;
-		vy=vy+ay;
-		ctx.fillStyle="#EEE";
-		ctx.fillRect(0,0,cw,ch);
-		if(obstacle[0].y==od)
-			create_obstacle();
-		if(obstacle[obstacle.length-1].y > ch){
-			obstacle.pop();
-		}
-		for (var key in obstacle){
-			ctx.fillStyle=ocolor;
-			ctx.fillRect(obstacle[key].x1,obstacle[key].y,obstacle[key].w1,oh);
-			ctx.fillRect(obstacle[key].x2,obstacle[key].y,obstacle[key].w2,oh);
-			obstacle[key].y+=1;
-		}
-		
-		ctx.fillStyle=pcolor;
-		ctx.fillRect(player.x, player.y, ph, ph);
-		ctx.fillText(score,5,ch-5);
-	}
-	function collision(){
-		for (var key  in obstacle){
-			if(obstacle[key].y<player.y+ph && obstacle[key].y>player.y-ph){
-				if(obstacle[key].passed==0)
-					score++;
-				obstacle[key].passed=1;
-				if(obstacle[key].w1>=player.x || obstacle[key].x2<=(player.x+20))
-					return 1;
-			}
-		
-			if(player.y>(ch-ph) || player.y<0 || player.x>(cw-ph) || player.x<0)
-				return 1;
-		}
-		return 0;
-	}
-});
+    }
+    setInterval(draw,20);
+    init();
+    $(document).keydown(
+      function(e)
+      {
+        var key=event.which;
+        if(key==37)
+        {
+          vy=-9;
+          vx=-5;
+        }
+        if(key==39)
+        {
+          vy=-9;
+          vx=5;
+        }
+      }
+    )
+    function create_obstacle( )
+    {
+      var value=Math.floor(Math.random()*350);
+      var value2=350-value;
+      obstacle.unshift(
+        {
+        y1:0,
+        w1:value,
+        y2:0,
+        w2:value2
+      }
+    );
+      //var r=Math.floor(Math.random()*254);
+      //var g=Math.floor(Math.random()*254);
+      //var b=Math.floor(Math.random()*254);
+      //cont.fillStyle="rgba("+r+","+g+","+b+","+"85"+")";
+      //cont.fillRect(0,0,value,50);
+      //cont.fillRect(value+150,0,value2,50);
+    }
+    function draw()
+    {
+      time++;
+      cont.fillStyle="#eee";
+      cont.fillRect(0,0,cw,ch);
+      cont.fillStyle="black";
+      cont.strokeRect(0,0,cw,ch);
+      player.x1=player.x1+vx;
+      player.y1=player.y1+vy;
+      vy=vy+1;
+      cont.fillRect(player.x1,player.y1,15,15);
+      cont.fillStyle="lightblue";
+      if(obstacle[(obstacle.length)-1].y1>ch*0.94)
+      {
+        obstacle.pop();
+        score++;
+      }
+      if(time==90)
+      {
+        time=0;
+        create_obstacle();
+      }
+      for(var key in obstacle)
+      {
+        if (Math.floor(player.y1)>490||Math.floor(player.x1)>490||Math.floor(player.y1)<5||Math.floor(player.x1)<5)
+        init();
+        if(Math.floor(player.y1)+20>obstacle[key].y1 && Math.floor(player.y1)-20<obstacle[key].y1)
+          {
+            if(Math.floor(player.x1)<Math.floor(obstacle[key].w1)||Math.floor(player.x1)>(Math.floor(obstacle[key].w1+150)))
+            {
+              init();
+            }
+          }
+      }
+      for(var key in obstacle)
+      {
+      cont.fillRect(0,obstacle[key].y1,obstacle[key].w1,10);
+      cont.fillRect(obstacle[key].w1+150,obstacle[key].y2,obstacle[key].w2,10);
+      obstacle[key].y1=obstacle[key].y1+2;
+      obstacle[key].y2=obstacle[key].y2+2;
+      }
+      cont.fillStyle="black";
+      cont.font="20px Verdana";
+      cont.fillText(score,5,495);
+    }
+  }
+);
 </script>
 <body>
-  <canvas id="mycanvas" width="500" height="600">
+  <canvas id="mycanvas" width="500" height="500">
 </body>
 </head>
 </html>

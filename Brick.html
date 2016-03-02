@@ -76,6 +76,7 @@ $(document).ready(function(){
 		if(obstacle[obstacle.length-1].y > ch){
 			obstacle.pop();
 		}
+		
 		for (var key in obstacle){
 			ctx.fillStyle=ocolor;
 			ctx.fillRect(obstacle[key].x1,obstacle[key].y,obstacle[key].w1,oh);
